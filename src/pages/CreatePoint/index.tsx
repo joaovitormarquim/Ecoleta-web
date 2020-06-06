@@ -11,6 +11,7 @@ import Dropzone from '../../components/Dropzone';
 import './styles.css';
 
 import logo from '../../assets/logo.svg';
+import check from '../../assets/check.svg';
 
 // estado para array ou objeto: manualmente informar o tipo da variável a ser armazenada
 
@@ -46,6 +47,8 @@ const CreatePoint = () => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [selectedPosition, setSelectedPosition] = useState<[number, number]>([0, 0]);
   const [selectedFile, setSelectedFile] = useState<File>();
+
+  const [showSuccessfulRegister, setShowSuccessfulRegister] = useState<boolean>(false);
 
   const history = useHistory();
 
@@ -142,15 +145,28 @@ const CreatePoint = () => {
       data.append('image', selectedFile);
     }
 
-    await api.post('points', data);
+    await api.post('points', data)
+      .then(response => handlePointCreated());
+  }
 
-    alert('Ponto de coleta criado!');
-
-    history.push('/');
+  function handlePointCreated() {
+    setShowSuccessfulRegister(true)
+    setTimeout(() => {
+      setShowSuccessfulRegister(false)
+      history.push('/');
+    }, 2000);
   }
 
   return(
     <div id="page-create-point">
+
+      {showSuccessfulRegister &&
+        <div id="check">
+          <img src={check} alt="Cadastro Concluido"/>
+          <h1 className="check-message">Cadastro concluído!</h1>
+        </div>
+      }
+
       <header>
         <img src={logo} alt="Ecoleta" />
 
@@ -276,6 +292,7 @@ const CreatePoint = () => {
         <button type="submit">Cadastrar ponto de coleta</button>
       </form>
     </div>
+
   );
 }
 
